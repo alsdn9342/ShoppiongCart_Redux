@@ -1,68 +1,117 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Redux Shopping Cart
 
-## Available Scripts
 
-In the project directory, you can run:
+## Desciption
 
-### `npm start`
+By using Redux and hooks, it dynamically add shopping items on cart and it functions to modify item quantity remove items from shopping list. 
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+## Technology stacks
+>
+> **JavaScript**, **React**, **Redux**, **react-router**
+> 
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+### Shopping-actions.js
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```js
+export const addToCart = (itemID) => {
+  return {
+    type: actionTypes.ADD_TO_CART,
+    payload: {
+      id: itemID,
+    },
+  };
+};
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+export const removeFromCart = (itemID) => {
+  return {
+    type: actionTypes.REMOVE_FROM_CART,
+    payload: {
+      id: itemID,
+    },
+  };
+};
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+export const adjustItemQty = (itemID, qty) => {
+  return {
+    type: actionTypes.ADJUST_ITEM_QTY,
+    payload: {
+      id: itemID,
+      qty,
+    },
+  };
+};
 
-### `npm run eject`
+export const loadCurrentItem = (item) => {
+  return {
+    type: actionTypes.LOAD_CURRENT_ITEM,
+    payload: item,
+  };
+};
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Shopping-reducers.js
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```js
+const shopReducer = (state = INITIAL_STATE, action) => {
+  switch (action.type) {
+    case actionTypes.ADD_TO_CART:
+      // Get Item data from products array
+      const item = state.products.find(
+        (product) => product.id === action.payload.id
+      );
+      // Check if Item is in cart already
+      const inCart = state.cart.find((item) =>
+        item.id === action.payload.id ? true : false
+      );
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+      return {
+        ...state,
+        cart: inCart
+          ? state.cart.map((item) =>
+              item.id === action.payload.id
+                ? { ...item, qty: item.qty + 1 }
+                : item
+            )
+          : [...state.cart, { ...item, qty: 1 }],
+      };
+    case actionTypes.REMOVE_FROM_CART:
+      return {
+        ...state,
+        cart: state.cart.filter((item) => item.id !== action.payload.id),
+      };
+    case actionTypes.ADJUST_ITEM_QTY:
+      return {
+        ...state,
+        cart: state.cart.map((item) =>
+          item.id === action.payload.id
+            ? { ...item, qty: +action.payload.qty }
+            : item
+        ),
+      };
+    case actionTypes.LOAD_CURRENT_ITEM:
+      return {
+        ...state,
+        currentItem: action.payload,
+      };
+    default:
+      return state;
+  }
+};
 
-## Learn More
+export default shopReducer;
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Main page
+> ### Shopping List
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+![Main Page](https://user-images.githubusercontent.com/65743649/134886435-3d99506f-c43b-43ac-b191-bed0e0911dd5.JPG)
 
-### Code Splitting
+>
+>
+> ### When to add items in Shopping Cart
+![Cart](https://user-images.githubusercontent.com/65743649/134886748-1ef0b057-87b7-459a-9dae-26b9b9d5a86f.JPG)
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
