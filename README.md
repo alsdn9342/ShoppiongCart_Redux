@@ -3,7 +3,7 @@
 
 ## Desciption
 
-By using Redux and hooks, it dynamically adds shopping items on cart and it functions to modify item quantity remove items from shopping list. 
+By using Redux and hooks, it dynamically adds shopping items on cart and it functions to modify item quantity and remove items from shopping list. 
 
 
 ## Technology stacks
